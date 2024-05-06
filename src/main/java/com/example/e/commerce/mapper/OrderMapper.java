@@ -3,43 +3,38 @@ package com.example.e.commerce.mapper;
 import com.example.e.commerce.model.Order;
 import com.example.e.commerce.model.OrderDetail;
 import org.apache.ibatis.annotations.*;
-import org.springframework.cglib.core.Local;
-//import org.mybatis.spring.annotation.MapperScan;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
-//    @Select("SELECT order_table.*, COUNT(order_detail.id) FROM order_table " +
-//            "INNER JOIN order_detail_table ON order_table.id = order_detail.order_id " +
-//            "WHERE createdAt=#{startDate}, createdAt=#{endDate}")
 
-    @Results(id = "1stOrderQueryMap", value = {
+    @Results(id = "1stOrdersQueryMap", value = {
             @Result(property = "id", column = "id"),
             @Result(property = "totalAmount", column = "total_amount"),
             @Result(property = "totalDiscountAmount", column = "total_discount_amount"),
-            @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "updatedAt", column = "updated_at")
     })
     @Select({"<script>",
             "SELECT id, total_amount, total_discount_amount",
             "FROM order_table",
-            "WHERE date(created_at) BETWEEN #{startDate} ",
-            "AND #{endDate}",
+            "WHERE order_table.created_at >= #{startDate} ",
+            "OR order_table.created_at &lt;= #{endDate}",
             "</script>"})
     public List<Order> query1stOrders(LocalDate startDate, LocalDate endDate);
 
+    @Results(id = "2ndOrdersQueryMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "orderId", column = "order_id"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at")
+    })
     @Select({"<script>",
-            "SELECT COUNT(id)",
-            "FROM order_detail_table",
-            "WHERE date(created_at) BETWEEN #{startDate} ",
+            "SELECT id, order_id",
+            "FROM order_detail_table odt",
+            "WHERE odt.created_at BETWEEN #{startDate} ",
             "AND #{endDate}",
-            "GROUP BY order_id",
             "</script>"})
     public List<OrderDetail> query2ndOrders(LocalDate startDate, LocalDate endDate);
 
@@ -69,7 +64,6 @@ public interface OrderMapper {
             "WHERE order_id = #{id} ",
             "GROUP BY order_detail_table.id, order_detail_table.order_id",
             "</script>"})
-//    @Select("SELECT * FROM order_table WHERE INNER JOIN order_detail ON order.id = order_detail.order_id WHERE order.id = #{id}")
     public List<OrderDetail> query2ndOrderDetail(Integer id);
 
     @Delete("DELETE FROM order_table WHERE id = #{id}")

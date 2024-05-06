@@ -24,15 +24,5 @@ public class ECommerceApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println(this.orderMapper);
-
-//		Order newItem = new Order(20,5);
-
-//		Map<String, Object> newItem = new HashMap<String, Object>();
-//
-//		newItem.put("total_amount", 20);
-//		newItem.put("total_discount_amount", 5);
-//		int createdCount = orderMapper.insertOrder(newItem);
-//		System.out.println("Created items count : " + createdCount);
 	}
 }
